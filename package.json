@@ -1,0 +1,22 @@
+{
+  "name": "latextosvg",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Web app to quickly compile LaTeX TikZ/pgfplots to formats like PDF and SVG with live preview.",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "author": "Samuel Mediani",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "rimraf": "^5.0.10",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

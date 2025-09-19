@@ -1,0 +1,59 @@
+# Node
+node_modules/
+.npmrc
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+.pnp*
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Env
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.code-workspace
+
+# Build / cache
+.tmp/
+dist/
+build/
+coverage/
+.tmp-cache/
+
+# LaTeX build outputs
+*.aux
+*.bbl
+*.blg
+*.brf
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.synctex.gz
+*.toc
+*.fdb_latexmk
+*.fls
+*.nav
+*.snm
+*.vrb
+*.xdv
+*.pdf
+*.dvi
+*.ps
+*.svg
+
+# Temp workdirs used by compiler
+latextosvg-*

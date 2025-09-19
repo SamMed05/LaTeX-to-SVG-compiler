@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LaTeX to SVG/PDF (TikZ, pgfplots)</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>LaTeX TikZ/pgfplots to SVG & PDF</h1>
+    <div class="controls">
+      <button id="compileBtn">Compile</button>
+      <label><input type="checkbox" id="autoCompile" checked /> Auto</label>
+      <select id="engine">
+        <option value="lualatex" selected>LuaLaTeX</option>
+        <option value="xelatex">XeLaTeX</option>
+        <option value="pdflatex">pdfLaTeX</option>
+      </select>
+      <select id="examples"></select>
+    </div>
+  </header>
+  <main class="split">
+    <section class="left">
+      <textarea id="editor" spellcheck="false"></textarea>
+      <div id="errors" class="errors hidden"></div>
+    </section>
+    <section class="right">
+      <div class="tabs">
+        <button class="tab active" data-tab="svg">SVG</button>
+        <button class="tab" data-tab="pdf">PDF</button>
+        <a id="downloadPdf" class="download" download="output.pdf">Download PDF</a>
+        <a id="downloadSvg" class="download" download="output.svg">Download SVG</a>
+      </div>
+      <div class="preview" id="svgPane"></div>
+      <iframe id="pdfPane" class="preview hidden"></iframe>
+    </section>
+  </main>
+  <footer>
+    <p>Requires LaTeX (MiKTeX/TeX Live) with latexmk and dvisvgm installed on the server. Your code is compiled locally and discarded.</p>
+  </footer>
+  <script src="/main.js"></script>
+</body>
+</html>
