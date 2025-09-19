@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- background -->
+  <rect width="64" height="64" rx="12" fill="#0b1220"/>
+
+  <!-- LaTeX backslash -->
+  <text x="6" y="40" font-family="monospace" font-size="28" font-weight="700" fill="#ffffff">\</text>
+
+  <!-- Arrow -->
+  <path d="M24 32h14" stroke="#f4c542" stroke-width="4" stroke-linecap="round"/>
+  <path d="M34 26l10 6-10 6" fill="#f4c542"/>
+
+  <!-- Bézier curve with control points -->
+  <circle cx="48" cy="40" r="3.5" fill="#4ade80"/>
+  <circle cx="58" cy="24" r="3.5" fill="#4ade80"/>
+  <path d="M48 40 C52 32, 54 28, 58 24"
+        fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round"/>
+</svg>
