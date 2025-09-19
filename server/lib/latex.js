@@ -28,7 +28,7 @@ ${content}
 \\end{document}\n`;
 }
 
-async function compileLatex({ code, format = 'svg', engine = 'lualatex' }) {
+async function compileLatex({ code, formats = ['svg'], engine = 'lualatex' }) {
   const id = uuidv4();
   const workDir = path.join(os.tmpdir(), `latextosvg-${id}`);
   fs.mkdirSync(workDir, { recursive: true });
@@ -53,7 +53,7 @@ async function compileLatex({ code, format = 'svg', engine = 'lualatex' }) {
   const pdfPath = path.join(workDir, 'input.pdf');
   const result = { ok: true };
 
-  if (format === 'svg') {
+  if (formats.includes('svg')) {
     const svgPath = path.join(workDir, 'output.svg');
     // Use dvisvgm to convert from PDF via ghostscript
     const dvisvgmCmd = `dvisvgm --no-fonts --exact --pdf --output=output.svg input.pdf`;
@@ -68,6 +68,8 @@ async function compileLatex({ code, format = 'svg', engine = 'lualatex' }) {
       result.svgDetail = stderr;
     }
   }
+
+  // PNG export removed by request
 
   // Always provide PDF as base64 (small previews; client can download)
   const pdfBuf = fs.readFileSync(pdfPath);

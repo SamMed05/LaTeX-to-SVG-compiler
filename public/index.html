@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LaTeX to SVG/PDF (TikZ, pgfplots)</title>
   <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 </head>
 <body>
   <header>
@@ -18,27 +19,40 @@
         <option value="pdflatex">pdfLaTeX</option>
       </select>
       <select id="examples"></select>
+      <button id="themeToggle" title="Toggle theme">🌙</button>
     </div>
   </header>
-  <main class="split">
+  <main class="split" id="splitRoot">
     <section class="left">
-      <textarea id="editor" spellcheck="false"></textarea>
+      <div id="editor" class="editor" aria-label="LaTeX editor"></div>
       <div id="errors" class="errors hidden"></div>
     </section>
+    <div class="gutter" id="gutter" role="separator" aria-orientation="vertical" aria-label="Resize editor and preview" aria-valuemin="20" aria-valuemax="80" aria-valuenow="50" tabindex="0"></div>
     <section class="right">
       <div class="tabs">
         <button class="tab active" data-tab="svg">SVG</button>
         <button class="tab" data-tab="pdf">PDF</button>
         <a id="downloadPdf" class="download" download="output.pdf">Download PDF</a>
         <a id="downloadSvg" class="download" download="output.svg">Download SVG</a>
+        <span class="spacer"></span>
+        <div class="zoom-controls">
+          <button id="zoomOut" title="Zoom out">−</button>
+          <button id="zoomReset" title="Reset zoom">100%</button>
+          <button id="zoomIn" title="Zoom in">+</button>
+        </div>
       </div>
-      <div class="preview" id="svgPane"></div>
+  <div class="preview" id="svgPane"><div id="svgWrap"></div></div>
       <iframe id="pdfPane" class="preview hidden"></iframe>
     </section>
   </main>
-  <footer>
+  <footer id="footerInfo">
     <p>Requires LaTeX (MiKTeX/TeX Live) with latexmk and dvisvgm installed on the server. Your code is compiled locally and discarded.</p>
+    <button id="footerHide" class="footer-hide" title="Hide info">Hide</button>
   </footer>
+  <script>
+    window.MONACO_BASE_URL = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min';
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.min.js"></script>
   <script src="/main.js"></script>
 </body>
 </html>
