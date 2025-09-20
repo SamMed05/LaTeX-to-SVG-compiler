@@ -21,8 +21,12 @@ function execCmd(cmd, opts = {}) {
 function wrapInTemplate(content) {
   // standalone class keeps output tightly cropped; tikz and pgfplots need packages
   return `\\documentclass[tikz, border=2pt]{standalone}
+% Core packages for TikZ/pgfplots snippets
+\\usepackage{tikz}
+\\usetikzlibrary{positioning,calc}
 \\usepackage{pgfplots}
 \\pgfplotsset{compat=1.18}
+\\usepackage{amsmath}
 \\begin{document}
 ${content}
 \\end{document}\n`;
