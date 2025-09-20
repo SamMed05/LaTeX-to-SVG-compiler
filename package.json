@@ -36,7 +36,7 @@
       "buildResources": "build"
     },
   "icon": "build/icon.ico",
-    "artifactName": "LaTeX-to-SVG-${version}-${os}-${arch}-${ext}",
+    "artifactName": "LaTeX-to-SVG-${version}-${os}-${arch}.${ext}",
     "files": [
       "electron/**/*",
       "public/**/*",
