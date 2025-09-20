@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LaTeX to SVG/PDF (TikZ, pgfplots)</title>
-  <link rel="stylesheet" href="/styles.css" />
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 </head>
 <body>
   <header>
@@ -50,9 +50,11 @@
     <button id="footerHide" class="footer-hide" title="Hide info">Hide</button>
   </footer>
   <script>
-    window.MONACO_BASE_URL = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min';
+    // Use local Monaco so the app works offline (Electron and server modes)
+    window.MONACO_BASE_URL = './monaco';
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.min.js"></script>
-  <script src="/main.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.min.js"></script> -->
+  <script src="./monaco/vs/loader.js"></script>
+  <script src="./main.js"></script>
 </body>
 </html>

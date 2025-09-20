@@ -22,6 +22,8 @@ Thumbs.db
 .vscode/
 .idea/
 *.code-workspace
+*.iml
+Desktop.ini
 
 # Build / cache
 .tmp/
@@ -29,6 +31,11 @@ dist/
 build/
 coverage/
 .tmp-cache/
+!build/README.txt
+.cache/
+.eslintcache
+.pnpm-store/
+.turbo/
 
 # LaTeX build outputs
 *.aux

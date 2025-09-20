@@ -84,11 +84,17 @@ async function doCompile() {
   compileBtn.classList.add('is-compiling');
   let data = null;
   try {
-    const res = await fetch('/api/compile', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ code, formats: ['svg'], engine })
-    });
-    data = await res.json();
+    if (window.LatexAPI && typeof window.LatexAPI.compile === 'function') {
+      // Electron path
+      data = await window.LatexAPI.compile({ code, formats: ['svg'], engine });
+    } else {
+      // Web server path
+      const res = await fetch('./api/compile', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, formats: ['svg'], engine })
+      });
+      data = await res.json();
+    }
     if (!data.ok) {
       renderErrors(data);
       return null;
@@ -116,9 +122,8 @@ async function doCompile() {
       errorsEl.classList.add('hidden');
       errorsEl.textContent = '';
     }
-    // no PNG support
   } catch (e) {
-    errorsEl.textContent = 'Network or server error: ' + e;
+    errorsEl.textContent = 'Runtime error: ' + e;
     errorsEl.classList.remove('hidden');
     return null;
   } finally {

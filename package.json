@@ -3,10 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "description": "Web app to quickly compile LaTeX TikZ/pgfplots to formats like PDF and SVG with live preview.",
-  "main": "server/index.js",
+  "main": "electron/main.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "nodemon server/index.js"
+    "dev": "nodemon server/index.js",
+    "electron:dev": "electron .",
+    "icons": "node ./scripts/generate-icons.js",
+    "preelectron:build": "npm run icons",
+    "electron:build": "electron-builder --win --x64",
+    "preelectron:build:portable": "npm run icons",
+    "electron:build:portable": "electron-builder --win portable --x64"
   },
   "author": "Samuel Mediani",
   "license": "MIT",
@@ -17,6 +23,38 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "electron": "^31.0.2",
+    "electron-builder": "^24.13.3",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.33.4"
+  },
+  "build": {
+    "appId": "com.samuel.latextosvg",
+    "productName": "LaTeX to SVG",
+    "directories": {
+      "buildResources": "build"
+    },
+  "icon": "build/icon.ico",
+    "artifactName": "LaTeX-to-SVG-${version}-${os}-${arch}-${ext}",
+    "files": [
+      "electron/**/*",
+      "public/**/*",
+      "server/lib/**/*",
+      "package.json",
+      "LICENSE"
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": false
+    }
   }
 }
