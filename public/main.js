@@ -74,6 +74,7 @@ function debouncedCompile() {
 }
 
 async function doCompile() {
+  clearEditorMarkers();
   errorsEl.classList.add('hidden');
   errorsEl.textContent = '';
   const code = monacoEditor ? monacoEditor.getValue() : '';
@@ -89,8 +90,7 @@ async function doCompile() {
     });
     data = await res.json();
     if (!data.ok) {
-      errorsEl.textContent = (data.error || 'Error') + '\n' + (data.log || data.detail || '');
-      errorsEl.classList.remove('hidden');
+      renderErrors(data);
       return null;
     }
     // SVG preview
@@ -108,6 +108,13 @@ async function doCompile() {
       const pdfUrl = 'data:application/pdf;base64,' + data.pdfBase64;
       pdfPane.src = pdfUrl;
       downloadPdf.href = pdfUrl;
+    }
+    // Show warnings/errors if present even on success
+    if (data.errors && data.errors.length) {
+      renderErrors(data);
+    } else {
+      errorsEl.classList.add('hidden');
+      errorsEl.textContent = '';
     }
     // no PNG support
   } catch (e) {
@@ -240,6 +247,74 @@ require(['vs/editor/editor.main'], () => {
   // First compile
   doCompile();
 });
+
+function renderErrors(payload) {
+  const errs = (payload && payload.errors) || [];
+  if (errs.length && monacoEditor) {
+    // Create markers
+    const model = monacoEditor.getModel();
+    const markers = errs.filter(e => Number.isInteger(e.line) && e.line > 0).map(e => ({
+      severity: monaco.MarkerSeverity.Error,
+      message: e.message,
+      startLineNumber: e.line,
+      startColumn: 1,
+      endLineNumber: e.line,
+      endColumn: 1000,
+      source: 'LaTeX'
+    }));
+    monaco.editor.setModelMarkers(model, 'latex-compile', markers);
+  }
+  // Build concise HTML list similar to Overleaf
+  const list = document.createElement('div');
+  // normal flow wrapping for readable messages
+  list.style.whiteSpace = 'normal';
+  const cleanText = (s) => {
+    if (!s || typeof s !== 'string') return '';
+    // collapse all whitespace (including newlines) and trim
+    let t = s.replace(/\s+/g, ' ').trim();
+    // remove stray spaces before punctuation
+    t = t.replace(/\s+([),.;:])/g, '$1');
+    return t;
+  };
+  if (errs.length) {
+    const ul = document.createElement('ul');
+    ul.style.paddingLeft = '1rem';
+    errs.slice(0, 10).forEach((e, idx) => {
+      const li = document.createElement('li');
+      const lineText = Number.isInteger(e.line) ? ` (line ${e.line})` : (e.rawLine ? ` (log line ${e.rawLine})` : '');
+      const msg = document.createElement('div');
+      msg.textContent = cleanText(e.message) + lineText;
+      li.appendChild(msg);
+      if (e.context) {
+        const ctx = document.createElement('div');
+        ctx.style.opacity = '0.8';
+        ctx.style.fontSize = '0.9em';
+        ctx.textContent = cleanText(e.context).slice(0, 300);
+        li.appendChild(ctx);
+      }
+      ul.appendChild(li);
+    });
+    list.appendChild(ul);
+  }
+  errorsEl.innerHTML = '';
+  if (errs.length === 0) {
+    // Fallback to raw log if provided
+    const pre = document.createElement('pre');
+    pre.style.margin = '0';
+    const title = (payload && payload.error) ? (payload.error + '\n') : '';
+    pre.textContent = title + (payload.log || payload.detail || '');
+    errorsEl.appendChild(pre);
+  } else {
+    errorsEl.appendChild(list);
+  }
+  errorsEl.classList.remove('hidden');
+}
+
+function clearEditorMarkers() {
+  if (!monacoEditor || !window.monaco) return;
+  const model = monacoEditor.getModel();
+  monaco.editor.setModelMarkers(model, 'latex-compile', []);
+}
 
 // Zoom and pan for SVG pane
 let zoom = 1;

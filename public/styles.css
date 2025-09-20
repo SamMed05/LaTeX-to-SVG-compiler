@@ -74,3 +74,7 @@ body.footer-hidden main.split { flex: 1 1 auto; }
 /* Resizable gutter */
 .gutter { width: 6px; cursor: col-resize; background: var(--muted); }
 .gutter:hover { background: #93c5fd66; }
+
+/* Errors panel tweaks */
+.errors ul { margin: 6px 0; }
+.errors li { margin: 4px 0; }

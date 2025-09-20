@@ -18,18 +18,78 @@ function execCmd(cmd, opts = {}) {
   });
 }
 
+// Build the LaTeX wrapper as header + footer so we can map log line numbers back to user code
+const TEMPLATE_HEADER = [
+  '\\documentclass[tikz, border=2pt]{standalone}',
+  '% Core packages for TikZ/pgfplots snippets',
+  '\\usepackage{tikz}',
+  '\\usetikzlibrary{positioning,calc}',
+  '\\usepackage{pgfplots}',
+  '\\pgfplotsset{compat=1.18}',
+  '\\usepackage{amsmath}',
+  '\\begin{document}'
+].join('\n') + '\n';
+const TEMPLATE_FOOTER = '\n\\end{document}\n';
+
 function wrapInTemplate(content) {
   // standalone class keeps output tightly cropped; tikz and pgfplots need packages
-  return `\\documentclass[tikz, border=2pt]{standalone}
-% Core packages for TikZ/pgfplots snippets
-\\usepackage{tikz}
-\\usetikzlibrary{positioning,calc}
-\\usepackage{pgfplots}
-\\pgfplotsset{compat=1.18}
-\\usepackage{amsmath}
-\\begin{document}
-${content}
-\\end{document}\n`;
+  return TEMPLATE_HEADER + content + TEMPLATE_FOOTER;
+}
+
+function getHeaderLineOffset() {
+  // Number of lines before user content starts
+  const nlCount = (TEMPLATE_HEADER.match(/\n/g) || []).length; // equals number of header lines
+  return nlCount; // content starts at headerLines + 1
+}
+
+function parseLatexLog(log, headerOffsetLines = 0) {
+  // Minimal parser to extract concise errors with line numbers similar to Overleaf
+  // Looks for lines starting with '! ' and captures following context and l.<num>
+  if (!log || typeof log !== 'string') return [];
+  const lines = log.split(/\r?\n/);
+  const errors = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line) continue;
+    if (line.startsWith('! ')) {
+      // Error message line. Collect until blank line or another '! '
+      const message = line.replace(/^!\s+/, '').trim();
+      let detail = '';
+      let foundLine = null;
+      for (let j = i + 1; j < Math.min(i + 10, lines.length); j++) {
+        const l = lines[j];
+        if (!l) break;
+        // Capture the TeX l.<num> indicator
+        const m = l.match(/\bl\.(\d+)\b/);
+        if (m) {
+          foundLine = parseInt(m[1], 10);
+        }
+        // Accumulate a short detail, but avoid too long lines
+        if (detail.length < 300) {
+          detail += (detail ? ' ' : '') + l.trim();
+        }
+        // stop if another error starts
+        if (l.startsWith('! ')) break;
+      }
+      // Map to user-visible line number
+      let userLine = foundLine != null ? (foundLine - headerOffsetLines) : null;
+      if (userLine != null && userLine < 1) userLine = 1;
+      errors.push({
+        message,
+        line: userLine,
+        rawLine: foundLine || null,
+        context: detail.trim(),
+      });
+    }
+  }
+  // De-duplicate similar messages
+  const seen = new Set();
+  return errors.filter(e => {
+    const key = `${e.line}|${e.message}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 async function compileLatex({ code, formats = ['svg'], engine = 'lualatex' }) {
@@ -38,6 +98,7 @@ async function compileLatex({ code, formats = ['svg'], engine = 'lualatex' }) {
   fs.mkdirSync(workDir, { recursive: true });
 
   const isFullDoc = /\\begin{document}/.test(code);
+  const headerOffset = isFullDoc ? 0 : getHeaderLineOffset();
   const texSource = isFullDoc ? code : wrapInTemplate(code);
   const texPath = path.join(workDir, 'input.tex');
   fs.writeFileSync(texPath, texSource, 'utf8');
@@ -50,8 +111,9 @@ async function compileLatex({ code, formats = ['svg'], engine = 'lualatex' }) {
     await execCmd(latexmkCmd, { cwd: workDir });
   } catch (e) {
     const log = safeRead(path.join(workDir, 'input.log'));
+    const errors = parseLatexLog(log, headerOffset);
     cleanup(workDir);
-    return { ok: false, log, error: 'LaTeX error' };
+    return { ok: false, error: 'LaTeX error', log, errors };
   }
 
   const pdfPath = path.join(workDir, 'input.pdf');
@@ -81,6 +143,9 @@ async function compileLatex({ code, formats = ['svg'], engine = 'lualatex' }) {
 
   // Attach .log for debugging on errors
   result.log = safeRead(path.join(workDir, 'input.log'));
+  // Parse errors even on success in case there are non-fatal errors (rare)
+  const parsed = parseLatexLog(result.log, headerOffset);
+  if (parsed.length) result.errors = parsed;
 
   // Clean temporary directory
   cleanup(workDir);
