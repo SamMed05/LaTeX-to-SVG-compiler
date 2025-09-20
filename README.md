@@ -1,95 +1,143 @@
-# LaTeX TikZ/pgfplots to SVG & PDF <img src="public/favicon.svg" type="image/svg+xml" alt="Icon" width="130" align="right" />
+# LaTeX to SVG & PDF Compiler <img src="public/favicon.svg" type="image/svg+xml" alt="Icon" width="130" align="right" />
 
-A simple local tool to compile LaTeX snippets (TikZ, pgfplots, etc.) and preview/download the resulting SVG and PDF.
+A simple local tool to compile LaTeX snippets (TikZ, pgfplots, etc.) with live preview and export to SVG and PDF formats.
 
-Now supports a zero-config desktop app (Electron) and a classic local web server.
+Available as both a zero-config desktop app (Electron) and a local web server.
 
 ## Features
 
-- Desktop app (no separate server needed)
-- Side-by-side editor and preview
-- Engines: LuaLaTeX, XeLaTeX, pdfLaTeX
-- Wraps snippets in a minimal `standalone` document when needed
-- Returns inline SVG and base64 PDF for preview and download
+- 🖥️ Desktop app (zero-config, no separate server needed)
+- 🔄 Side-by-side editor (with Monaco) and live preview
+- ⚙️ Multiple LaTeX engines: LuaLaTeX, XeLaTeX, pdfLaTeX
+- 📦 Automatic document wrapping for standalone snippets
+- 📄 Export to both SVG and PDF formats
+- 🌐 Alternative web server mode for browser-based usage
 
-## Requirements (both modes)
+![screenshot](screenshot.png)
 
-- LaTeX distribution (MiKTeX/TeX Live)
-- Tools in PATH: `latexmk`, `lualatex`/`xelatex`/`pdflatex`, `dvisvgm`, and Ghostscript (`gswin64c`) for PDF→SVG
-- Node.js 18+ (required to run from source or build the installer; not required for end users once installed)
+## Installation
 
-## Run as a desktop app (Electron)
+### Option 1: Desktop App
 
-The desktop build compiles LaTeX locally within the app. No server to start.
+1. Download the installer from the [Releases page](https://github.com/SamMed05/LaTeX-to-SVG-compiler/releases)
+2. Run the installer - No additional setup required!
 
-1. Install dependencies
+Or build from source (see [Development](#development) section below).
 
-```pwsh
-npm install
-```
+### Option 2: Web Server Mode
 
-2. Launch the desktop app (dev)
+1. **Clone the repository**
 
-```pwsh
-npm run electron:dev
-```
+   ```bash
+   git clone https://github.com/SamMed05/LaTeX-to-SVG-compiler.git
+   cd LaTeX-to-SVG-compiler
+   ```
 
-3. Build a one‑click Windows installer
+2. **Install dependencies**
 
-```pwsh
-npm run electron:build
-```
+   ```bash
+   npm install
+   ```
 
-This produces the installer: `dist\\LaTeX to SVG Setup 0.1.0.exe`
+3. **Start the server**
 
-To build a standalone portable EXE (no install):
+   ```bash
+   npm start
+   ```
 
-```pwsh
-npm run electron:build:portable
-```
+4. **Open your browser** to <http://localhost:3000>
 
-This produces the single-file portable exe: `dist\\LaTeX-to-SVG-<version>-win-x64-exe`
+## Requirements
 
-Notes:
+Both installation modes require a LaTeX distribution and supporting tools:
 
-- The app menu bar is removed; the window/taskbar icon is generated from `public/favicon.svg`.
-- Icons are generated automatically during build. You can regenerate them manually with:
-
-```pwsh
-npm run icons
-```
-
-### Monaco editor
-
-Monaco is bundled locally under `public/monaco` and is loaded from `./monaco`. If you want to refresh Monaco to a new version, either commit updated files or add a script to copy from `node_modules/monaco-editor/min` into `public/monaco` and run it before packaging.
-
-## Run as a local web server
-
-1. Install dependencies
-```pwsh
-npm install
-```
-2. Start the server
-
-```pwsh
-npm run start
-```
-
-Open <http://localhost:3000> in your browser.
+- **LaTeX distribution**: MiKTeX (Windows) or TeX Live (cross-platform)
+- **Required tools in PATH**:
+  - `latexmk` - LaTeX build automation
+  - LaTeX engines: `lualatex`, `xelatex`, or `pdflatex`
+  - `dvisvgm` - DVI to SVG conversion
+  - **Ghostscript** (`gswin64c` on Windows) - PDF processing
+- **Node.js 18+** (only required when building from source)
 
 If MiKTeX prompts for package installation the first time, allow it. If `dvisvgm` complains about Ghostscript, install it and ensure `gswin64c.exe` is on PATH.
 
+## Development
+
+### Running from source
+
+1. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+2. **Launch the desktop app (development mode)**
+
+   ```bash
+   npm run electron:dev
+   ```
+
+### Building Desktop App
+
+1. **Build Windows installer**
+
+   ```bash
+   npm run electron:build
+   ```
+
+   This produces: `dist\LaTeX to SVG Setup 0.1.0.exe`
+
+2. **Build portable executable**
+
+   ```bash
+   npm run electron:build:portable
+   ```
+
+   This produces: `dist\LaTeX-to-SVG-<version>-win-x64-exe`
+
+### Icons
+
+Icons are generated automatically during build. To regenerate manually:
+
+```bash
+npm run icons
+```
+
+The app uses icons generated from `public/favicon.svg`. The window/taskbar icon is also generated from this file.
+
+### Monaco Editor
+
+Monaco is bundled locally under `public/monaco` and loads from `./monaco`. To update Monaco:
+
+1. Copy files from `node_modules/monaco-editor/min` to `public/monaco`
+2. Commit the updated files or add a build script
+
 ## Troubleshooting
 
-- `latexmk`/`dvisvgm` not found: ensure your LaTeX distribution added its bin folders to PATH (you may need to restart your shell). On Windows, Ghostscript adds `gswin64c.exe` to PATH.
-- MiKTeX missing packages: allow on‑the‑fly installation in MiKTeX Console, or preinstall required packages.
-- Offline Monaco editor: Monaco is bundled locally in `public/monaco` and loads from `./monaco` folder.
+#### LaTeX commands not found (`latexmk`, `lualatex`, etc.)
 
-## Security notes
+- Ensure your LaTeX distribution added its bin folders to PATH
+- On Windows: Restart your command prompt/terminal after LaTeX installation
+- Test with: `latexmk --version` and `lualatex --version`
 
-- LaTeX can execute shell commands. This app does NOT enable `--shell-escape`. Keep usage local/trusted.
-- No user code is persisted; temporary directories are cleaned after each compile.
+#### Ghostscript not found (`gswin64c` not found)
+
+- Install Ghostscript from <https://www.ghostscript.com/download/gsdnld.html>
+- Ensure `gswin64c.exe` (Windows) or `gs` (Linux/Mac) is in PATH
+- Test with: `gswin64c --version` (Windows) or `gs --version` (Linux/Mac)
+
+#### MiKTeX package installation prompts
+
+- Allow automatic package installation in MiKTeX Console
+- Or pre-install common packages: `tikz`, `pgfplots`, `xcolor`, `geometry`
+- Run: `miktex packages install tikz pgfplots xcolor geometry`
+
+#### SVG output is blank or malformed
+
+- Check LaTeX compilation errors in the app console
+- Verify `dvisvgm` is installed: `dvisvgm --version`
+- Some complex TikZ drawings may require specific packages
 
 ## License
 
-MIT
+[MIT License](LICENSE).
