@@ -77,23 +77,16 @@ If MiKTeX prompts for package installation the first time, allow it. If `dvisvgm
    npm run electron:dev
    ```
 
-### Building Desktop App
-
-1. **Build Windows installer**
+### Building Desktop App for Windows (installer + portable artifact)
 
    ```bash
    npm run electron:build
    ```
 
-   This produces: `dist\LaTeX to SVG Setup 0.1.0.exe`
+   This produces both the NSIS installer and the portable EXE in the `dist/` folder, for example:
 
-2. **Build portable executable**
-
-   ```bash
-   npm run electron:build:portable
-   ```
-
-   This produces: `dist\LaTeX-to-SVG-<version>-win-x64-exe`
+   - `dist\LaTeX-to-SVG-<version>-win-x64-setup.exe` (installer)
+   - `dist\LaTeX-to-SVG-<version>-win-x64-portable.exe` (portable)
 
 ### Icons
 
@@ -114,25 +107,25 @@ Monaco is bundled locally under `public/monaco` and loads from `./monaco`. To up
 
 ## Troubleshooting
 
-#### LaTeX commands not found (`latexmk`, `lualatex`, etc.)
+### LaTeX commands not found (`latexmk`, `lualatex`, etc.)
 
 - Ensure your LaTeX distribution added its bin folders to PATH
 - On Windows: Restart your command prompt/terminal after LaTeX installation
 - Test with: `latexmk --version` and `lualatex --version`
 
-#### Ghostscript not found (`gswin64c` not found)
+### Ghostscript not found (`gswin64c` not found)
 
 - Install Ghostscript from <https://www.ghostscript.com/download/gsdnld.html>
 - Ensure `gswin64c.exe` (Windows) is in PATH
 - Test with: `gswin64c --version` (Windows)
 
-#### MiKTeX package installation prompts
+### MiKTeX package installation prompts
 
 - Allow automatic package installation in MiKTeX Console
 - Or pre-install common packages: `tikz`, `pgfplots`, `xcolor`, `geometry`
 - Run: `miktex packages install tikz pgfplots xcolor geometry`
 
-#### SVG output is blank or malformed
+### SVG output is blank or malformed
 
 - Check LaTeX compilation errors in the app console
 - Verify `dvisvgm` is installed: `dvisvgm --version`

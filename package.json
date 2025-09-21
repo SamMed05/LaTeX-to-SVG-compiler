@@ -11,9 +11,7 @@
     "icons": "node ./scripts/generate-icons.js",
     "clean": "rimraf dist",
     "preelectron:build": "npm run icons",
-    "electron:build": "electron-builder --win --x64",
-    "preelectron:build:portable": "npm run icons",
-    "electron:build:portable": "electron-builder --win portable --x64"
+    "electron:build": "electron-builder --win --x64"
   },
   "author": "Samuel Mediani",
   "license": "MIT",
