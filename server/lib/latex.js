@@ -112,8 +112,37 @@ async function compileLatex({ code, formats = ['svg'], engine = 'lualatex' }) {
   } catch (e) {
     const log = safeRead(path.join(workDir, 'input.log'));
     const errors = parseLatexLog(log, headerOffset);
+    // Surface as much detail as possible to the UI
+    const detail = (e && (e.stderr || e.stdout || e.message)) || '';
+    const code = e && e.code;
+    // Heuristics to suggest fixes for common Windows setups
+    let hint = '';
+    const combined = `${detail}\n${log}`.toLowerCase();
+    if (/perl( |:|\bis\b).*not (found|recognized)/.test(combined) || /'perl' is not recognized/.test(combined)) {
+      hint = 'latexmk requires Perl. Install Strawberry Perl and restart the app: https://strawberryperl.com/';
+    } else if (/'latexmk' is not recognized|latexmk: command not found/.test(combined)) {
+      hint = 'latexmk not found. Ensure MiKTeX/TeX Live bin is on PATH and restart your session.';
+    } else if (/'lualatex' is not recognized|'xelatex' is not recognized|'pdflatex' is not recognized/.test(combined)) {
+      hint = 'LaTeX engine not found. Install the selected engine in MiKTeX (LuaLaTeX/XeLaTeX/pdfLaTeX) or switch engine in the app.';
+    } else if (/dvisvgm.*(not found|is not recognized)/.test(combined)) {
+      hint = 'dvisvgm not found. Install it via your TeX distribution and ensure it is on PATH.';
+    } else if (/ghostscript|gswin64c.*(not found|is not recognized)/.test(combined)) {
+      hint = 'Ghostscript not found. Install from https://www.ghostscript.com/download/ and ensure gswin64c.exe is on PATH.';
+    } else if (/luaotfload \| db : font names database not found/.test(combined)) {
+      hint = 'LuaTeX is generating the font database on first run. This can take a few minutes; try again after it completes.';
+    }
     cleanup(workDir);
-    return { ok: false, error: 'LaTeX error', log, errors };
+    return {
+      ok: false,
+      error: 'LaTeX error',
+      log,
+      errors,
+      detail,
+      code,
+      hint,
+      cmd: latexmkCmd,
+      engine: safeEngine,
+    };
   }
 
   const pdfPath = path.join(workDir, 'input.pdf');

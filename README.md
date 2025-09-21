@@ -57,9 +57,15 @@ Both installation modes require a LaTeX distribution and supporting tools:
   - LaTeX engines: `lualatex`, `xelatex`, or `pdflatex`
   - `dvisvgm` - DVI to SVG conversion
   - **Ghostscript** (`gswin64c` on Windows) - PDF processing
-- **Node.js 18+** (only required when building from source)
+  - **Perl (Windows)** - required by `latexmk` (install [Strawberry Perl](https://strawberryperl.com/))
+  - **Node.js 18+** (only required when building from source)
 
 If MiKTeX prompts for package installation the first time, allow it. If `dvisvgm` complains about Ghostscript, install it and ensure `gswin64c.exe` is on PATH.
+
+First run notes (Windows):
+
+- After installing MiKTeX/Ghostscript/Perl, log out/in or reboot so PATH updates apply to the desktop app.
+- On the very first compilation with LuaLaTeX, `luaotfload` may build the font database. This can take a few minutes; compile again afterward.
 
 ## Development
 
@@ -113,6 +119,12 @@ Monaco is bundled locally under `public/monaco` and loads from `./monaco`. To up
 - On Windows: Restart your command prompt/terminal after LaTeX installation
 - Test with: `latexmk --version` and `lualatex --version`
 
+### `latexmk` complains about missing Perl
+
+- Install [Strawberry Perl](https://strawberryperl.com/)
+- Ensure `perl.exe` is on PATH (open a new terminal and run `perl -v`)
+- If the app was already open, close and reopen it so PATH changes are picked up
+
 ### Ghostscript not found (`gswin64c` not found)
 
 - Install Ghostscript from <https://www.ghostscript.com/download/gsdnld.html>
@@ -120,6 +132,8 @@ Monaco is bundled locally under `public/monaco` and loads from `./monaco`. To up
 - Test with: `gswin64c --version` (Windows)
 
 ### MiKTeX package installation prompts
+
+- On the first compile, MiKTeX may install many packages (and LuaLaTeX may build the font DB). If you see temporary errors or a long log, let it complete, then try compiling again. If necessary, close and reopen the app.
 
 - Allow automatic package installation in MiKTeX Console
 - Or pre-install common packages: `tikz`, `pgfplots`, `xcolor`, `geometry`

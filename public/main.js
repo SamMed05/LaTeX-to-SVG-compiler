@@ -301,17 +301,35 @@ function renderErrors(payload) {
     });
     list.appendChild(ul);
   }
-  errorsEl.innerHTML = '';
-  if (errs.length === 0) {
-    // Fallback to raw log if provided
-    const pre = document.createElement('pre');
-    pre.style.margin = '0';
-    const title = (payload && payload.error) ? (payload.error + '\n') : '';
-    pre.textContent = title + (payload.log || payload.detail || '');
-    errorsEl.appendChild(pre);
-  } else {
-    errorsEl.appendChild(list);
+  // Optional hint from server for common environment issues
+  if (payload && payload.hint) {
+    const hintBox = document.createElement('div');
+    hintBox.style.marginTop = '0.5rem';
+    hintBox.style.padding = '0.5rem 0.75rem';
+    hintBox.style.border = '1px solid var(--border-color, #666)';
+    hintBox.style.borderRadius = '6px';
+    hintBox.style.background = 'var(--hint-bg, rgba(255, 215, 0, 0.08))';
+    hintBox.style.fontSize = '0.95em';
+    hintBox.textContent = payload.hint;
+    list.appendChild(hintBox);
   }
+  // Always append a collapsible full log/details for deep debugging
+  const full = document.createElement('details');
+  full.style.marginTop = '0.5rem';
+  const sum = document.createElement('summary');
+  sum.textContent = 'Show full LaTeX log';
+  full.appendChild(sum);
+  const pre = document.createElement('pre');
+  pre.style.margin = '0.25rem 0 0 0';
+  pre.style.maxHeight = '260px';
+  pre.style.overflow = 'auto';
+  const title = (payload && payload.error) ? (payload.error + '\n') : '';
+  pre.textContent = title + (payload.log || payload.detail || '');
+  full.appendChild(pre);
+
+  errorsEl.innerHTML = '';
+  if (list.childNodes.length) errorsEl.appendChild(list);
+  errorsEl.appendChild(full);
   errorsEl.classList.remove('hidden');
 }
 
