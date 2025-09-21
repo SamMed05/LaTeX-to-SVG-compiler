@@ -123,8 +123,8 @@ Monaco is bundled locally under `public/monaco` and loads from `./monaco`. To up
 #### Ghostscript not found (`gswin64c` not found)
 
 - Install Ghostscript from <https://www.ghostscript.com/download/gsdnld.html>
-- Ensure `gswin64c.exe` (Windows) or `gs` (Linux/Mac) is in PATH
-- Test with: `gswin64c --version` (Windows) or `gs --version` (Linux/Mac)
+- Ensure `gswin64c.exe` (Windows) is in PATH
+- Test with: `gswin64c --version` (Windows)
 
 #### MiKTeX package installation prompts
 
